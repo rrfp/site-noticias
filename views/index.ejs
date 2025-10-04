@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard de Notícias</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="site-wrap">
+    <!-- TOPO -->
+    <header class="topbar">
+      <div class="topbar__brand">
+        <span class="brand-dot"></span>
+        <h1 class="brand">Portal de Notícias</h1>
+      </div>
+      <div class="topbar__user">
+        <p class="welcome">Bem-vindo, <strong><%= user.email %></strong>!</p>
+        <a href="/logout" class="btn btn-logout">Sair</a>
+      </div>
+    </header>
+
+    <!-- CONTEÚDO -->
+    <main class="container">
+      <% if (!news || news.length === 0) { %>
+        <div class="empty">
+          <div class="empty__icon">📰</div>
+          <p>Não foi possível carregar notícias externas.</p>
+        </div>
+      <% } else { %>
+        <section class="news-grid">
+          <% news.forEach((n, idx) => { %>
+            <article class="card <%= idx === 0 ? 'card--featured' : '' %>">
+              <% if (n.urlToImage) { %>
+                <a href="<%= n.url %>" target="_blank" rel="noopener" class="card__media">
+                  <img src="<%= n.urlToImage %>" alt="Imagem da notícia" class="news-img" loading="lazy">
+                </a>
+              <% } %>
+              <div class="card__content">
+                <h3 class="card__title">
+                  <a href="<%= n.url %>" target="_blank" rel="noopener"><%= n.title %></a>
+                </h3>
+                <% if (n.description) { %>
+                  <p class="card__desc"><%= n.description %></p>
+                <% } %>
+                <div class="card__meta">
+                  <% if (n.source) { %>
+                    <span class="badge">
+                      <span class="badge__dot"></span>
+                      Fonte: <%= n.source %>
+                    </span>
+                  <% } %>
+                  <a href="<%= n.url %>" target="_blank" rel="noopener" class="card__read">Ler matéria →</a>
+                </div>
+              </div>
+            </article>
+          <% }) %>
+        </section>
+      <% } %>
+    </main>
+
+    <!-- RODAPÉ -->
+    <footer class="footer">
+      <small>© <span id="year"><script>document.getElementById('year').innerText = new Date().getFullYear();</script></span> · Dashboard de Notícias</small>
+    </footer>
+  </div>
+</body>
+</html>
