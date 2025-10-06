@@ -30,11 +30,9 @@ module.exports = function(passport) {
   },
   async (accessToken, refreshToken, profile, done) => {
     try {
-      // Verifica se já existe por googleId
       let user = await User.findOne({ googleId: profile.id });
       if (user) return done(null, user);
 
-      // Tenta encontrar por email
       let existingUser = await User.findOne({ email: profile.emails[0].value });
       if (existingUser) {
         existingUser.googleId = profile.id;
@@ -42,7 +40,6 @@ module.exports = function(passport) {
         return done(null, existingUser);
       }
 
-      // Cria novo usuário se não existir
       user = new User({
         googleId: profile.id,
         name: profile.displayName,
@@ -64,16 +61,14 @@ module.exports = function(passport) {
   },
   async (accessToken, refreshToken, profile, done) => {
     try {
-      // Verifica se já existe por githubId
       let user = await User.findOne({ githubId: profile.id });
       if (user) return done(null, user);
 
-      // Pega email principal, se não houver, fallback
-      let email = profile.emails && profile.emails.length > 0 
-        ? profile.emails[0].value 
-        : `${profile.username}@github.com`;
+      // Pega email principal ou fallback
+      let email = (profile.emails && profile.emails.length > 0)
+        ? profile.emails[0].value
+        : `${profile.username || profile.id}@users.noreply.github.com`;
 
-      // Verifica se já existe por email
       let existingUser = await User.findOne({ email });
       if (existingUser) {
         existingUser.githubId = profile.id;
@@ -81,16 +76,17 @@ module.exports = function(passport) {
         return done(null, existingUser);
       }
 
-      // Cria novo usuário se não existir
       user = new User({
         githubId: profile.id,
-        name: profile.username,
+        name: profile.username || profile.displayName,
         email: email
       });
 
       await user.save();
       done(null, user);
+
     } catch (err) {
+      console.error("Erro estratégia GitHub:", err);
       done(err, null);
     }
   }));

@@ -15,14 +15,26 @@
   box-sizing: border-box;
 }
 
-body {
-  font-family: 'Segoe UI', sans-serif;
-  background: #0f172a; /* azul marinho */
-  color: #f1f5f9;
-  min-height: 100vh;
+body.login-page {
+  font-family: Arial, sans-serif;
+  background: url('/img/background.png') no-repeat center center fixed;
+  background-size: cover;
   display: flex;
   justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
 }
+
+.login-box {
+  background: rgba(255,255,255,0.95);
+  padding: 40px 30px;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+  width: 350px;
+  text-align: center;
+}
+
 
 .site-wrap {
   width: 100%;
