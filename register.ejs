@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Cadastro</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #f4f4f4;
+    }
+    .container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      width: 300px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background: #007bff;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    #message {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Criar Conta</h2>
+    <form id="registerForm">
+      <input type="text" name="name" id="name" placeholder="Nome" required>
+      <input type="email" name="email" id="email" placeholder="Email" required>
+      <input type="password" name="password" id="password" placeholder="Senha" required>
+      <button type="submit">Finalizar Cadastro</button>
+    </form>
+    <div id="message"></div>
+    <br>
+    <a href="/login"><button type="button">Entrar</button></a>
+  </div>
+
+  <script>
+    const form = document.getElementById("registerForm");
+    const messageBox = document.getElementById("message");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById("name").value;
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      try {
+        const res = await fetch("/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, password })
+        });
+
+        const data = await res.json();
+        messageBox.textContent = data.message;
+
+        if (data.success) {
+          messageBox.style.color = "green";
+          setTimeout(() => window.location.href = "/", 1500);
+        } else {
+          messageBox.style.color = "red";
+          // limpa os campos se deu erro (ex: email já existe)
+          document.getElementById("name").value = "";
+          document.getElementById("email").value = "";
+          document.getElementById("password").value = "";
+        }
+      } catch (err) {
+        messageBox.textContent = "❌ Email ja está em uso. Tente novamente.";
+        messageBox.style.color = "red";
+      }
+    });
+  </script>
+</body>
+</html>
+a

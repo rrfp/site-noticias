@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard de Notícias</title>
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    body.home-page {
+      font-family: Arial, sans-serif;
+      background: url('<%= "/img/background.png.png" %>') no-repeat center center fixed;
+      background-size: cover;
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding-top: 20px;
+    }
+
+    .site-wrap {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      width: 95%;
+      max-width: 1200px;
+      padding: 20px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    }
+
+    .topbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 20px; }
+    .topbar__brand { display: flex; align-items: center; gap: 10px; }
+    .brand-dot { width: 12px; height: 12px; background: #007bff; border-radius: 50%; }
+    .brand { font-size: 24px; color: #007bff; margin: 0; }
+    .topbar__user { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+    .welcome { font-weight: bold; color: #333; }
+    .btn-logout { background: #db4437; color: #fff; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: bold; transition: all 0.3s; }
+    .btn-logout:hover { opacity: 0.9; transform: translateY(-2px); }
+
+    .news-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+    .card { background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
+    .card--featured { grid-column: span 2; }
+    .card__media img { width: 100%; height: 180px; object-fit: cover; }
+    .card__content { padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+    .card__title a { text-decoration: none; color: #007bff; font-weight: bold; }
+    .card__desc { color: #333; font-size: 14px; }
+    .card__meta { display: flex; justify-content: space-between; align-items: center; font-size: 12px; }
+    .badge { display: flex; align-items: center; gap: 4px; font-size: 12px; color: #555; }
+    .badge__dot { width: 6px; height: 6px; background: #007bff; border-radius: 50%; display: inline-block; }
+    .card__read { color: #007bff; text-decoration: none; font-weight: bold; }
+    .card__read:hover { text-decoration: underline; }
+
+    .loading, .empty { text-align: center; font-size: 16px; padding: 30px 0; color: #555; }
+    .empty__icon { font-size: 40px; margin-bottom: 10px; }
+
+    .footer { text-align: center; font-size: 12px; color: #444; margin-top: 20px; }
+  </style>
+</head>
+<body class="home-page">
+  <div class="site-wrap">
+    <header class="topbar">
+      <div class="topbar__brand">
+        <span class="brand-dot"></span>
+        <h1 class="brand">Portal de Notícias</h1>
+      </div>
+      <div class="topbar__user">
+        <% if(user) { %>
+          <p class="welcome">Bem-vindo, <%= user.email %>!</p>
+          <a href="/logout" class="btn-logout">Sair</a>
+        <% } else { %>
+          <a href="/login" class="btn-logout">Login</a>
+        <% } %>
+      </div>
+    </header>
+
+    <main class="container" id="news-container">
+      <div class="loading">Carregando notícias...</div>
+    </main>
+
+    <footer class="footer">
+      <small>© <span id="year"><script>document.getElementById('year').innerText = new Date().getFullYear();</script></span> · Dashboard de Notícias</small>
+    </footer>
+  </div>
+
+  <script>
+    async function loadNews() {
+      const container = document.getElementById('news-container');
+      container.innerHTML = '';
+
+      try {
+        const res = await fetch('/api/news');
+        const news = await res.json();
+
+        if (!news || news.length === 0) {
+          container.innerHTML = `<div class="empty"><div class="empty__icon">📰</div><p>Não foi possível carregar notícias externas.</p></div>`;
+          return;
+        }
+
+        const section = document.createElement('section');
+        section.className = 'news-grid';
+
+        news.forEach((n, idx) => {
+          const article = document.createElement('article');
+          article.className = `card ${idx === 0 ? 'card--featured' : ''}`;
+          article.innerHTML = `
+            ${n.urlToImage ? `<a href="${n.url}" target="_blank" rel="noopener" class="card__media"><img src="${n.urlToImage}" alt="Imagem da notícia" loading="lazy"></a>` : ''}
+            <div class="card__content">
+              <h3 class="card__title"><a href="${n.url}" target="_blank" rel="noopener">${n.title}</a></h3>
+              ${n.description ? `<p class="card__desc">${n.description}</p>` : ''}
+              <div class="card__meta">
+                ${n.source ? `<span class="badge"><span class="badge__dot"></span>Fonte: ${n.source}</span>` : ''}
+                <a href="${n.url}" target="_blank" rel="noopener" class="card__read">Ler matéria →</a>
+              </div>
+            </div>
+          `;
+          section.appendChild(article);
+        });
+
+        container.appendChild(section);
+      } catch (err) {
+        console.error('Erro ao carregar notícias:', err);
+        container.innerHTML = `<div class="empty"><div class="empty__icon">📰</div><p>Não foi possível carregar notícias externas.</p></div>`;
+      }
+    }
+
+    loadNews();
+  </script>
+</body>
+</html>
