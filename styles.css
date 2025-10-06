@@ -27,19 +27,107 @@ body {
 
 /* LOGIN CENTRALIZADO */
 body.login-page {
-  display: flex;
   justify-content: center;
   align-items: center;
 }
 
 /* BOX DE LOGIN */
 .login-box {
-  background: rgba(255,255,255,0.95);
+  background: rgba(255,255,255,0.92); /* Transparência leve */
   padding: 40px 30px;
   border-radius: 12px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
   width: 350px;
   text-align: center;
+}
+
+.login-box h2 {
+  margin-bottom: 25px;
+  color: var(--brand);
+  font-size: 22px;
+}
+
+.login-box input {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 15px;
+  outline: none;
+  transition: border 0.3s;
+}
+
+.login-box input:focus {
+  border-color: var(--brand);
+}
+
+.btn-login {
+  display: block;
+  width: 100%;
+  background: var(--brand);
+  color: #fff;
+  border: none;
+  padding: 12px;
+  margin: 12px 0;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.btn-login:hover {
+  background: var(--brand-700);
+}
+
+/* LOGIN SOCIAL */
+.social-login {
+  display: flex;
+  justify-content: space-between;
+  margin: 15px 0;
+  gap: 10px;
+}
+
+.social-btn {
+  flex: 1;
+  text-decoration: none;
+  color: #fff;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  transition: opacity 0.3s;
+}
+
+.social-btn.google {
+  background: #db4437;
+}
+.social-btn.google:hover {
+  opacity: 0.9;
+}
+
+.social-btn.github {
+  background: #333;
+}
+.social-btn.github:hover {
+  opacity: 0.9;
+}
+
+.register-text {
+  margin-top: 18px;
+  font-size: 14px;
+  color: #444;
+}
+
+.register-text a {
+  color: var(--brand);
+  text-decoration: none;
+  font-weight: bold;
+}
+.register-text a:hover {
+  text-decoration: underline;
 }
 
 /* CONTAINER PRINCIPAL DO SITE */
@@ -51,7 +139,7 @@ body.login-page {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background: rgba(255,255,255,0.9); /* Transparência para mostrar o fundo */
+  background: rgba(255,255,255,0.9); /* Transparência para mostrar fundo */
   border-radius: 12px;
 }
 

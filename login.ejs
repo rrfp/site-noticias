@@ -6,21 +6,19 @@
   <title>Login - Sistema de Notícias</title>
   <link rel="stylesheet" href="/styles.css">
   <style>
-    
+    /* FUNDO E CENTRALIZAÇÃO */
     body {
-  font-family: Arial, sans-serif;
-  background: url("/img/background.png.png") no-repeat center center fixed;
-  background-size: cover;       /* cobre toda a tela */
-  background-attachment: fixed; /* fixa o fundo mesmo rolando */
-  background-position: center;  /* centraliza */
-  background-repeat: no-repeat; /* não repete */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  margin: 0;
-}
+      font-family: Arial, sans-serif;
+      background: url("/img/background.png.png") no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
 
+    /* BOX DE LOGIN */
     .login-box {
       background: rgba(255, 255, 255, 0.92); /* leve transparência */
       padding: 40px 30px;
@@ -36,6 +34,7 @@
       font-size: 22px;
     }
 
+    /* INPUTS */
     .login-box input {
       width: 100%;
       padding: 12px;
@@ -51,6 +50,7 @@
       border-color: #007bff;
     }
 
+    /* BOTÃO LOGIN */
     .btn-login {
       display: block;
       width: 100%;
@@ -70,6 +70,7 @@
       background: #0056b3;
     }
 
+    /* LOGIN SOCIAL */
     .social-login {
       display: flex;
       justify-content: space-between;
@@ -103,6 +104,7 @@
       opacity: 0.9;
     }
 
+    /* REGISTRO */
     .register-text {
       margin-top: 18px;
       font-size: 14px;
@@ -114,6 +116,7 @@
       text-decoration: none;
       font-weight: bold;
     }
+
     .register-text a:hover {
       text-decoration: underline;
     }
