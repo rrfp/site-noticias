@@ -7,14 +7,14 @@
   <link rel="stylesheet" href="/styles.css">
   <style>
     /* FUNDO E CENTRALIZAÇÃO */
-    body {
+    body.login-page {
       font-family: Arial, sans-serif;
-      background: url("/img/background.png.png") no-repeat center center fixed; /* Corrigido o caminho */
+      background: url("/img/background.png.png") no-repeat center center fixed; /* Corrigido */
       background-size: cover;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
       margin: 0;
     }
 
@@ -30,7 +30,7 @@
 
     .login-box h2 {
       margin-bottom: 25px;
-      color: #007bff;
+      color: #1d4ed8;
       font-size: 22px;
     }
 
@@ -47,14 +47,14 @@
     }
 
     .login-box input:focus {
-      border-color: #007bff;
+      border-color: #1d4ed8;
     }
 
     /* BOTÃO LOGIN */
     .btn-login {
       display: block;
       width: 100%;
-      background: #007bff;
+      background: #1d4ed8;
       color: #fff;
       border: none;
       padding: 12px;
@@ -67,7 +67,7 @@
     }
 
     .btn-login:hover {
-      background: #0056b3;
+      background: #1e40af;
     }
 
     /* LOGIN SOCIAL */
@@ -90,19 +90,11 @@
       transition: opacity 0.3s;
     }
 
-    .google {
-      background: #db4437;
-    }
-    .google:hover {
-      opacity: 0.9;
-    }
+    .google { background: #db4437; }
+    .google:hover { opacity: 0.9; }
 
-    .github {
-      background: #333;
-    }
-    .github:hover {
-      opacity: 0.9;
-    }
+    .github { background: #333; }
+    .github:hover { opacity: 0.9; }
 
     /* REGISTRO */
     .register-text {
@@ -112,16 +104,14 @@
     }
 
     .register-text a {
-      color: #007bff;
+      color: #1d4ed8;
       text-decoration: none;
       font-weight: bold;
     }
-    .register-text a:hover {
-      text-decoration: underline;
-    }
+    .register-text a:hover { text-decoration: underline; }
   </style>
 </head>
-<body>
+<body class="login-page">
   <div class="login-box">
     <h2>Entrar</h2>
     <form action="/login" method="POST">
