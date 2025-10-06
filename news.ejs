@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Notícias</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="site-wrap">
+
+    <!-- TOPO -->
+    <div class="topbar">
+      <div class="topbar__brand">
+        <div class="brand-dot"></div>
+        <div class="brand">Site Notícias</div>
+      </div>
+
+      <!-- Barra de busca -->
+      <form action="/search" method="get" class="search-bar">
+        <input type="text" name="q" value="<%= query || '' %>" placeholder="Buscar notícia..." required>
+        <button type="submit">🔍</button>
+      </form>
+
+      <div class="topbar__user">
+        <a href="/logout" class="btn-logout">Sair</a>
+      </div>
+    </div>
+
+    <!-- GRID DE NOTÍCIAS -->
+    <div class="news-grid">
+      <% if (articles && articles.length > 0) { %>
+        <% articles.forEach(article => { %>
+          <div class="card">
+            <div class="card__media">
+              <% if (article.urlToImage) { %>
+                <img src="<%= article.urlToImage %>" alt="Imagem da notícia" class="news-img">
+              <% } else { %>
+                <img src="/img/no-image.png" alt="Sem imagem" class="news-img">
+              <% } %>
+            </div>
+            <div class="card__content">
+              <div class="card__title">
+                <a href="<%= article.url %>" target="_blank"><%= article.title %></a>
+              </div>
+              <div class="card__desc"><%= article.description || 'Sem descrição disponível.' %></div>
+              <div class="card__meta">
+                <div class="badge">
+                  <div class="badge__dot"></div>
+                  <span><%= article.source || 'Fonte desconhecida' %></span>
+                </div>
+                <a href="<%= article.url %>" target="_blank" class="card__read">Ler mais</a>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      <% } else { %>
+        <p style="text-align:center; width:100%; margin-top:20px;">Nenhuma notícia encontrada.</p>
+      <% } %>
+    </div>
+
+    <!-- PAGINAÇÃO -->
+    <% if (totalPages && totalPages > 1) { %>
+      <div class="pagination">
+        <% for (let i = 1; i <= totalPages; i++) { %>
+          <a href="<%= query ? '/search?q=' + encodeURIComponent(query) + '&page=' + i : '/news?page=' + i %>" 
+             class="<%= currentPage === i ? 'active' : '' %>">
+             <%= i %>
+          </a>
+        <% } %>
+      </div>
+    <% } %>
+
+    <!-- RODAPÉ -->
+    <div class="footer">
+      <p>© <%= new Date().getFullYear() %> Site Notícias</p>
+    </div>
+
+  </div>
+</body>
+</html>
