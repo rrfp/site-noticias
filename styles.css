@@ -18,7 +18,7 @@
 /* FUNDO GLOBAL */
 body {
   font-family: Arial, sans-serif;
-  background: url('/img/background.png.png') no-repeat center center fixed;
+  background: url('/img/background.png') no-repeat center center fixed;
   background-size: cover;
   min-height: 100vh;
   margin: 0;
@@ -34,7 +34,7 @@ body.login-page {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: url('/img/background.png.png') no-repeat center center fixed;
+  background: url('/img/background.png') no-repeat center center fixed;
   background-size: cover;
 }
 
