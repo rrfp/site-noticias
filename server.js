@@ -149,11 +149,15 @@ app.get('/auth/github/callback', (req, res, next) => {
 
 // ----- LOGOUT -----
 app.get('/logout', (req, res, next) => {
-  req.logout(err => {
+  req.logout(function(err) {
     if (err) return next(err);
-    res.redirect('/'); // volta para home
+    req.session.destroy(() => {           // destrói a sessão
+      res.clearCookie('connect.sid');     // limpa o cookie da sessão
+      res.redirect('/');                  // redireciona para home
+    });
   });
 });
+
 
 // ----- INICIAR SERVIDOR -----
 const PORT = process.env.PORT || 3000;
