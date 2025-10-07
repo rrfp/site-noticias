@@ -3,126 +3,132 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - Sistema de Notícias</title>
+  <title>Login - Site Notícias</title>
   <link rel="stylesheet" href="/styles.css">
   <style>
-    /* FUNDO E CENTRALIZAÇÃO */
+    /* ===== Container de login ===== */
     body.login-page {
-      font-family: Arial, sans-serif;
-      background: url("/img/background.png") no-repeat center center fixed; /* Corrigido */
-      background-size: cover;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
       margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(rgba(255,255,255,0.85), rgba(255,255,255,0.85)),
+                  url('/img/background.png') center center / cover no-repeat fixed;
     }
 
-    /* BOX DE LOGIN */
     .login-box {
-      background: rgba(255, 255, 255, 0.92);
-      padding: 40px 30px;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 40px 35px;
       border-radius: 12px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
-      width: 350px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+      width: 100%;
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
       text-align: center;
     }
 
     .login-box h2 {
-      margin-bottom: 25px;
-      color: #1d4ed8;
-      font-size: 22px;
+      color: #007bff;
+      font-weight: 800;
+      margin-bottom: 10px;
     }
 
-    /* INPUTS */
+    /* ===== Inputs ===== */
     .login-box input {
       width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      border: 1px solid #ddd;
-      border-radius: 6px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
       font-size: 15px;
       outline: none;
-      transition: border 0.3s;
+      transition: all 0.2s;
     }
 
     .login-box input:focus {
-      border-color: #1d4ed8;
+      border-color: #007bff;
+      box-shadow: 0 0 6px rgba(0,123,255,0.3);
     }
 
-    /* BOTÃO LOGIN */
-    .btn-login {
-      display: block;
+    /* ===== Botões ===== */
+    .btn-login, .social-btn {
       width: 100%;
-      background: #1d4ed8;
-      color: #fff;
+      padding: 12px 0;
+      border-radius: 8px;
       border: none;
-      padding: 12px;
-      margin: 12px 0;
-      border-radius: 6px;
+      font-weight: 600;
       font-size: 15px;
-      font-weight: bold;
       cursor: pointer;
-      transition: background 0.3s;
+      transition: all 0.3s;
+      text-decoration: none;
+      color: #fff;
+      display: inline-block;
     }
 
+    .btn-login {
+      background: #007bff;
+    }
     .btn-login:hover {
-      background: #1e40af;
+      background: #0056b3;
+      transform: translateY(-2px);
     }
 
-    /* LOGIN SOCIAL */
+    .social-btn.google {
+      background: #db4437;
+    }
+    .social-btn.github {
+      background: #333;
+    }
+    .social-btn:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+    }
+
+    /* ===== Social login ===== */
     .social-login {
       display: flex;
-      justify-content: space-between;
-      margin: 15px 0;
+      flex-direction: column;
       gap: 10px;
+      margin-top: 10px;
     }
 
-    .social-btn {
-      flex: 1;
-      text-decoration: none;
-      color: #fff;
-      padding: 12px;
-      border-radius: 6px;
-      font-size: 14px;
-      font-weight: bold;
-      text-align: center;
-      transition: opacity 0.3s;
-    }
-
-    .google { background: #db4437; }
-    .google:hover { opacity: 0.9; }
-
-    .github { background: #333; }
-    .github:hover { opacity: 0.9; }
-
-    /* REGISTRO */
+    /* ===== Texto de cadastro ===== */
     .register-text {
-      margin-top: 18px;
       font-size: 14px;
-      color: #444;
+      color: #555;
+    }
+    .register-text a {
+      color: #007bff;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .register-text a:hover {
+      text-decoration: underline;
     }
 
-    .register-text a {
-      color: #1d4ed8;
-      text-decoration: none;
-      font-weight: bold;
+    /* ===== Responsividade ===== */
+    @media(max-width: 480px) {
+      .login-box {
+        padding: 30px 25px;
+      }
     }
-    .register-text a:hover { text-decoration: underline; }
   </style>
 </head>
 <body class="login-page">
   <div class="login-box">
     <h2>Entrar</h2>
     <form action="/login" method="POST">
-      <input type="email" name="email" placeholder="Email" required>
-      <input type="password" name="password" placeholder="Senha" required>
+      <input type="email" name="email" placeholder="Seu e-mail" required>
+      <input type="password" name="password" placeholder="Sua senha" required>
       <button type="submit" class="btn-login">Entrar</button>
     </form>
 
     <div class="social-login">
-      <a href="/auth/google" class="social-btn google">Google</a>
-      <a href="/auth/github" class="social-btn github">GitHub</a>
+      <a href="/auth/google" class="social-btn google">Login com Google</a>
+      <a href="/auth/github" class="social-btn github">Login com GitHub</a>
     </div>
 
     <p class="register-text">
