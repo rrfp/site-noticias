@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Site Notícias</title>
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    body.home-page {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      background: url('/img/background.png') center center / cover no-repeat fixed;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    /* ===== Topbar ===== */
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      margin: 20px 0;
+      width: 90%;
+      max-width: 1200px;
+    }
+    .topbar__brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-dot { width: 16px; height: 16px; background: #007bff; border-radius: 50%; }
+    .brand { font-size: 30px; color: #007bff; margin: 0; font-weight: 800; }
+    .topbar__user {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    .welcome { font-weight: 600; color: #333; }
+    .btn-logout {
+      background: #db4437; color: #fff; padding: 10px 20px; border-radius: 8px;
+      text-decoration: none; font-weight: 600; transition: all 0.3s;
+    }
+    .btn-logout:hover { opacity: 0.9; transform: translateY(-2px); }
+
+    /* ===== Login Box ===== */
+    .login-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      max-width: 400px;
+      margin: 50px auto;
+      padding: 35px 30px;
+      background: rgba(255,255,255,0.95);
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+      text-align: center;
+      width: 100%;
+      transition: all 0.3s;
+    }
+    .login-wrap h2 { color: #007bff; font-weight: 800; margin-bottom: 10px; font-size: 28px; }
+    .login-wrap input {
+      width: 100%; padding: 12px 14px; border-radius: 8px; border: 1px solid #ccc;
+      font-size: 15px; outline: none; transition: all 0.2s;
+    }
+    .login-wrap input:focus { border-color: #007bff; box-shadow: 0 0 6px rgba(0,123,255,0.3); }
+
+    /* ===== Botões login/social ===== */
+    .btn-login, .social-btn {
+      width: 100%; padding: 12px 0; border-radius: 8px; border: none;
+      font-weight: 600; font-size: 15px; cursor: pointer; transition: all 0.4s cubic-bezier(0.4,0,0.2,1), box-shadow 0.3s;
+      text-decoration: none; color: #fff; display: inline-block; margin-top: 6px;
+    }
+    .btn-login { background: #007bff; }
+    .btn-login:hover { background: #0056b3; transform: translateY(-3px) scale(1.02); box-shadow: 0 8px 20px rgba(0,0,0,0.25); }
+    .social-btn.google { background: #db4437; }
+    .social-btn.github { background: #333; }
+    .social-btn:hover { opacity: 0.9; transform: translateY(-3px) scale(1.02); box-shadow: 0 8px 20px rgba(0,0,0,0.25); }
+
+    /* ===== Barra de pesquisa ===== */
+    .search-bar {
+      width: 100%; max-width: 500px; margin: 20px auto;
+      display: flex; gap: 6px;
+    }
+    .search-bar input {
+      flex: 1; padding: 10px 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 15px;
+    }
+    .search-bar button {
+      padding: 10px 16px; border-radius: 8px; border: none; background: #007bff;
+      color: #fff; font-weight: 600; cursor: pointer;
+    }
+    .search-bar button:hover { background: #0056b3; }
+
+    /* ===== Notícias ===== */
+    .news-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
+      width: 90%;
+      max-width: 1200px;
+      margin: 0 auto 30px auto;
+    }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.35s, box-shadow 0.35s, filter 0.35s;
+      cursor: pointer;
+    }
+    .card:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 16px 32px rgba(0,0,0,0.28); filter: brightness(1.05); }
+    .card__media img { width: 100%; height: 220px; object-fit: cover; transition: transform 0.4s; }
+    .card__media img:hover { transform: scale(1.08); }
+    .card__content { padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+    .card__title a { text-decoration: none; color: #007bff; font-weight: 700; font-size: 18px; }
+    .card__desc { color: #555; font-size: 15px; line-height: 1.4; }
+    .card__meta { display: flex; justify-content: space-between; align-items: center; font-size: 12px; }
+    .badge { display: flex; align-items: center; gap: 4px; font-size: 12px; color: #555; }
+    .badge__dot { width: 6px; height: 6px; background: #007bff; border-radius: 50%; display: inline-block; }
+    .card__read { color: #fff; background: #007bff; font-weight: 600; text-decoration: none; padding: 6px 12px; border-radius: 6px; transition: all 0.2s; display: inline-block; text-align: center; }
+    .card__read:hover { background: #0056b3; transform: translateY(-1px); }
+
+    /* ===== Rodapé ===== */
+    .footer { text-align: center; font-size: 12px; color: #444; margin-top: 25px; padding-bottom: 12px; }
+
+    @media (max-width: 768px) { .card__media img { height: 200px; } .login-wrap { margin: 20px 15px; padding: 30px 25px; } }
+    @media (max-width: 480px) { .card__media img { height: 180px; } .card__title a { font-size: 16px; } .card__desc { font-size: 14px; } }
+  </style>
+</head>
+<body class="home-page">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="topbar__brand">
+      <div class="brand-dot"></div>
+      <h1 class="brand">Notícias</h1>
+    </div>
+    <% if (user) { %>
+      <div class="topbar__user">
+        <span class="welcome">Olá, <%= user.name %></span>
+        <a href="/logout" class="btn-logout">Sair</a>
+      </div>
+    <% } %>
+  </div>
+
+  <!-- Login -->
+  <% if (!user) { %>
+    <div class="login-wrap">
+      <h2>Entrar</h2>
+      <form action="/login" method="POST">
+        <input type="email" name="email" placeholder="Seu e-mail" required>
+        <input type="password" name="password" placeholder="Sua senha" required>
+        <button type="submit" class="btn-login">Entrar</button>
+      </form>
+      <div class="social-login">
+        <a href="/auth/google" class="social-btn google">Login com Google</a>
+        <a href="/auth/github" class="social-btn github">Login com GitHub</a>
+      </div>
+      <p class="register-text">Não tem conta? <a href="/register">Cadastre-se</a></p>
+    </div>
+  <% } %>
+
+  <% if (user) { %>
+    <!-- Barra de pesquisa -->
+    <form class="search-bar" action="/search" method="GET">
+      <input type="text" name="q" placeholder="Buscar notícias por tema..." required>
+      <button type="submit">Pesquisar</button>
+    </form>
+
+    <!-- Notícias -->
+    <% if (articles && articles.length > 0) { %>
+      <div class="news-grid">
+        <% articles.forEach(article => { %>
+          <div class="card">
+            <% if (article.urlToImage) { %>
+              <div class="card__media">
+                <img src="<%= article.urlToImage %>" alt="Imagem da notícia">
+              </div>
+            <% } %>
+            <div class="card__content">
+              <h3 class="card__title"><a href="<%= article.url %>" target="_blank"><%= article.title %></a></h3>
+              <p class="card__desc"><%= article.description %></p>
+              <div class="card__meta">
+                <span class="badge"><span class="badge__dot"></span> <%= article.source %></span>
+                <a href="<%= article.url %>" class="card__read" target="_blank">Ler</a>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <p style="text-align:center; margin-top:20px;">Nenhuma notícia encontrada.</p>
+    <% } %>
+  <% } %>
+
+  <div class="footer">&copy; <%= new Date().getFullYear() %> Site Notícias. Todos os direitos reservados.</div>
+</body>
+</html>

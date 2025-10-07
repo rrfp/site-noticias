@@ -47,37 +47,45 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ----- ROTA HOME -----
-app.get('/', async (req, res) => {
-  if (!req.isAuthenticated()) {
-    return res.render('home', { user: null, articles: [], currentPage: 1, totalPages: 1, query: "" });
-  }
-
+// ----- FUNÇÃO AUXILIAR PARA BUSCAR NOTÍCIAS -----
+async function fetchNews(query = 'tecnologia') {
   try {
     const apiKey = process.env.NEWS_API_KEY;
-    const page = parseInt(req.query.page) || 1;
-    const pageSize = 20;
-
+    const pageSize = 100; // pegar até 100 notícias de uma vez
     const response = await axios.get(
-      `https://newsapi.org/v2/everything?q=tecnologia&language=pt&page=${page}&pageSize=${pageSize}&apiKey=${apiKey}`
+      `https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&language=pt&pageSize=${pageSize}&apiKey=${apiKey}`
     );
 
-    const totalResults = response.data.totalResults;
-    const totalPages = Math.ceil(totalResults / pageSize);
-
-    const news = response.data.articles.map(a => ({
+    return response.data.articles.map(a => ({
       title: a.title,
       description: a.description || a.content,
       url: a.url,
       urlToImage: a.urlToImage,
       source: a.source.name
     }));
-
-    res.render('home', { user: req.user, articles: news, currentPage: page, totalPages, query: "" });
   } catch (err) {
     console.error("Erro ao buscar notícias:", err.message);
-    res.render('home', { user: req.user, articles: [], currentPage: 1, totalPages: 1, query: "" });
+    return [];
   }
+}
+
+// ----- ROTA HOME -----
+app.get('/', async (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.render('home', { user: null, articles: [], query: "" });
+  }
+  const articles = await fetchNews();
+  res.render('home', { user: req.user, articles, query: "" });
+});
+
+// ----- ROTA DE PESQUISA -----
+app.get('/search', async (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.redirect('/');
+  }
+  const q = req.query.q || 'tecnologia';
+  const articles = await fetchNews(q);
+  res.render('home', { user: req.user, articles, query: q });
 });
 
 // ----- LOGIN (TELA) -----
@@ -104,16 +112,12 @@ app.get('/register', (req, res) => res.render('register'));
 app.post('/register', async (req, res) => {
   try {
     const { name, email, password } = req.body;
-
     const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.json({ success: false, message: "❌ Email já está em uso." });
-    }
+    if (existingUser) return res.json({ success: false, message: "❌ Email já está em uso." });
 
     const hashed = await bcrypt.hash(password, 10);
     const user = new User({ email, password: hashed, name: name || email });
     await user.save();
-
     return res.json({ success: true, message: "✅ Cadastro realizado com sucesso!" });
   } catch (err) {
     console.error("Erro no registro:", err);
@@ -151,13 +155,12 @@ app.get('/auth/github/callback', (req, res, next) => {
 app.get('/logout', (req, res, next) => {
   req.logout(function(err) {
     if (err) return next(err);
-    req.session.destroy(() => {           // destrói a sessão
-      res.clearCookie('connect.sid');     // limpa o cookie da sessão
-      res.redirect('/');                  // redireciona para home
+    req.session.destroy(() => {
+      res.clearCookie('connect.sid');
+      res.redirect('/');
     });
   });
 });
-
 
 // ----- INICIAR SERVIDOR -----
 const PORT = process.env.PORT || 3000;
