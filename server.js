@@ -47,57 +47,14 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ----- AUTENTICAÇÃO -----
-function checkAuth(req, res, next) {
-  if (req.isAuthenticated()) return next();
-  res.redirect('/login');
-}
-
-// ----- ROTAS LOGIN/REGISTRO -----
-app.get('/login', (req, res) => res.render('login'));
-app.post('/login', passport.authenticate('local', { successRedirect: '/', failureRedirect: '/login' }));
-
-app.get('/register', (req, res) => res.render('register'));
-app.post('/register', async (req, res) => {
-  try {
-    const existingUser = await User.findOne({ email: req.body.email });
-    if (existingUser) return res.redirect('/register');
-
-    const hashed = await bcrypt.hash(req.body.password, 10);
-    const user = new User({ email: req.body.email, password: hashed, name: req.body.name || req.body.email });
-    await user.save();
-    res.redirect('/login');
-  } catch (err) {
-    console.error("Erro no registro:", err);
-    res.redirect('/register');
+// ----- ROTA HOME -----
+app.get('/', async (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.render('home', { user: null, articles: [], currentPage: 1, totalPages: 1, query: "" });
   }
-});
 
-// ----- LOGIN GOOGLE -----
-app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
-app.get('/auth/google/callback', passport.authenticate('google', { successRedirect: '/', failureRedirect: '/login' }));
-
-// ----- LOGIN GITHUB -----
-app.get('/auth/github', passport.authenticate('github', { scope: ['user:email'] }));
-app.get('/auth/github/callback', passport.authenticate('github', { successRedirect: '/', failureRedirect: '/login' }));
-
-// ----- LOGOUT -----
-app.get("/logout", (req, res, next) => {
-  req.logout(err => { if (err) return next(err); res.redirect("/login"); });
-});
-
-// ----- ROTA API DE NOTÍCIAS -----
-const fallbackNews = [
-  { title: "Notícia de teste 1", description: "Descrição da notícia 1", url: "#", urlToImage: null },
-  { title: "Notícia de teste 2", description: "Descrição da notícia 2", url: "#", urlToImage: null }
-];
-
-// ----- ROTA DE NOTÍCIAS (PAGINAÇÃO) -----
-app.get('/news', checkAuth, async (req, res) => {
   try {
     const apiKey = process.env.NEWS_API_KEY;
-    if (!apiKey) return res.render('news', { articles: fallbackNews, currentPage: 1, totalPages: 1, query: "" });
-
     const page = parseInt(req.query.page) || 1;
     const pageSize = 20;
 
@@ -116,50 +73,86 @@ app.get('/news', checkAuth, async (req, res) => {
       source: a.source.name
     }));
 
-    res.render('news', { articles: news, currentPage: page, totalPages, query: "" });
-
+    res.render('home', { user: req.user, articles: news, currentPage: page, totalPages, query: "" });
   } catch (err) {
     console.error("Erro ao buscar notícias:", err.message);
-    res.render('news', { articles: fallbackNews, currentPage: 1, totalPages: 1, query: "" });
+    res.render('home', { user: req.user, articles: [], currentPage: 1, totalPages: 1, query: "" });
   }
 });
 
-// ----- ROTA DE BUSCA -----
-app.get('/search', checkAuth, async (req, res) => {
+// ----- LOGIN (TELA) -----
+app.get('/login', (req, res) => {
+  res.render('login', { user: req.user || null });
+});
+
+// ----- LOGIN LOCAL -----
+app.post('/login', (req, res, next) => {
+  passport.authenticate('local', (err, user, info) => {
+    if (err) return next(err);
+    if (!user) return res.redirect('/login');
+
+    req.logIn(user, (err) => {
+      if (err) return next(err);
+      return res.redirect('/');
+    });
+  })(req, res, next);
+});
+
+// ----- REGISTRO -----
+app.get('/register', (req, res) => res.render('register'));
+
+app.post('/register', async (req, res) => {
   try {
-    const query = req.query.q || "tecnologia";
-    const page = parseInt(req.query.page) || 1;
-    const pageSize = 20;
-    const apiKey = process.env.NEWS_API_KEY;
+    const { name, email, password } = req.body;
 
-    if (!apiKey) return res.render('news', { articles: fallbackNews, currentPage: 1, totalPages: 1, query });
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.json({ success: false, message: "❌ Email já está em uso." });
+    }
 
-    const response = await axios.get(
-      `https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&language=pt&page=${page}&pageSize=${pageSize}&apiKey=${apiKey}`
-    );
+    const hashed = await bcrypt.hash(password, 10);
+    const user = new User({ email, password: hashed, name: name || email });
+    await user.save();
 
-    const totalResults = response.data.totalResults;
-    const totalPages = Math.ceil(totalResults / pageSize);
-
-    const news = response.data.articles.map(a => ({
-      title: a.title,
-      description: a.description || a.content,
-      url: a.url,
-      urlToImage: a.urlToImage,
-      source: a.source.name
-    }));
-
-    res.render('news', { articles: news, currentPage: page, totalPages, query });
-
+    return res.json({ success: true, message: "✅ Cadastro realizado com sucesso!" });
   } catch (err) {
-    console.error("Erro ao buscar na API:", err.message);
-    res.render('news', { articles: fallbackNews, currentPage: 1, totalPages: 1, query: req.query.q });
+    console.error("Erro no registro:", err);
+    return res.json({ success: false, message: "❌ Erro no servidor. Tente novamente." });
   }
 });
 
-// ----- PÁGINA INICIAL -----
-app.get('/', checkAuth, (req, res) => {
-  res.redirect('/news'); // redireciona direto para /news
+// ----- LOGIN GOOGLE -----
+app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+app.get('/auth/google/callback', (req, res, next) => {
+  passport.authenticate('google', (err, user) => {
+    if (err) return next(err);
+    if (!user) return res.redirect('/login');
+    req.logIn(user, (err) => {
+      if (err) return next(err);
+      return res.redirect('/');
+    });
+  })(req, res, next);
+});
+
+// ----- LOGIN GITHUB -----
+app.get('/auth/github', passport.authenticate('github', { scope: ['user:email'] }));
+app.get('/auth/github/callback', (req, res, next) => {
+  passport.authenticate('github', (err, user) => {
+    if (err) return next(err);
+    if (!user) return res.redirect('/login');
+    req.logIn(user, (err) => {
+      if (err) return next(err);
+      return res.redirect('/');
+    });
+  })(req, res, next);
+});
+
+// ----- LOGOUT -----
+app.get('/logout', (req, res, next) => {
+  req.logout(err => {
+    if (err) return next(err);
+    res.redirect('/'); // volta para home
+  });
 });
 
 // ----- INICIAR SERVIDOR -----

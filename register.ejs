@@ -53,7 +53,7 @@
     </form>
     <div id="message"></div>
     <br>
-    <a href="/login"><button type="button">Entrar</button></a>
+    <a href="/login">Já tem conta? Entrar</a>
   </div>
 
   <script>
@@ -82,17 +82,12 @@
           setTimeout(() => window.location.href = "/", 1500);
         } else {
           messageBox.style.color = "red";
-          // limpa os campos se deu erro (ex: email já existe)
-          document.getElementById("name").value = "";
-          document.getElementById("email").value = "";
-          document.getElementById("password").value = "";
         }
       } catch (err) {
-        messageBox.textContent = "❌ Email ja está em uso. Tente novamente.";
+        messageBox.textContent = "❌ Erro ao se conectar. Tente novamente.";
         messageBox.style.color = "red";
       }
     });
   </script>
 </body>
 </html>
-a
